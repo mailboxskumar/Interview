@@ -1,0 +1,6 @@
+Steps to Install Configure Eclipse with GitHub
+
+1. Install Github Plugin in eclipse
+	Open Eclipse>>Help>>Eclipse Market Place>>GitHub Extensions
+2. 
+	
