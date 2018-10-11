@@ -1,0 +1,22 @@
+public static HashMap<String,String> appConfig = new HashMap<String,String>();
+public static String sql_appConfig="SELECT config_Category,config_Name,config_Value from appConfig where configName is not null";
+
+appConfig=read_Xl_prop(CURRENT_DIR+fp+Config.APP_CONFIG_PATH,Config.sql_appConfig);
+
+
+public static HashMap<String,String> read_Xl_prop(String filePath, String sqlQuery) {
+              Fillo fillo = new Fillo();
+              HashMap<String,String> appConfig= new HashMap<>();
+              try {
+                     Connection conn = fillo.getConnection(filePath);
+                     Recordset rs = conn.executeQuery(sql_appConfig);
+                     while(rs.next())
+                           appConfig.put(rs.getField("config_Name"),rs.getField("config_Value"));
+                     rs.close();
+                     conn.close();
+
+              } catch (FilloException e) {
+                     e.printStackTrace();
+              }
+              return appConfig;
+       }      
