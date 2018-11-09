@@ -1,0 +1,28 @@
+	public static void stringManipulate() {
+
+		String readableRequest = "encryptedPIN=024704&loginType=ib&channel=rc&serviceName=P2PLOGIN&deviceId=&userId=UATGNATR034&platform=android&unencyptedPINlength=6&appID=DBSMobileWallet&randomNumber=&fetchMobileNumber=true&serviceID=loginNew&mobileNoSecureSession=&ipAddress=172.16.0.115&appver=4.6.0";
+		String encryptedString = "!#!#!#!!#!#!#!#";
+		String searchString = "encryptedPIN";
+		String tempString = "";
+
+		for (int i = searchString.length(); i < readableRequest.length(); i++) {
+
+			char ch = readableRequest.charAt(i);
+
+			if (ch != '&') {
+				tempString = tempString + ch;
+			}
+
+			if (ch == '&') {
+				searchString = searchString + tempString;
+				break;
+			}
+		}
+		String[] temp = readableRequest.split(searchString);
+		searchString = searchString.split("=")[0] + "=" + encryptedString;
+		searchString = searchString + temp[1];
+
+		System.out.println(searchString);
+
+	}
+	
