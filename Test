@@ -1,0 +1,96 @@
+		<!-- https://mvnrepository.com/artifact/io.rest-assured/rest-assured -->
+		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<artifactId>rest-assured</artifactId>
+			<version>3.3.0</version>
+		</dependency>
+    
+    
+    
+ @API-CaseManagement
+Feature: To verify case details by alias or ID
+
+  @GetCaseByAlias
+  Scenario: User Calls API Service to get case details by alias
+    Given A Case exists with alias of "AB01"
+    When a user retrives the case details by alias
+    Then the status code is 200
+    And the response includes following
+      | name             | TEO         |
+      | numberOfChildren |           3 |
+      | dateOfBirth      | 1989, 1, 15 |
+      | nationality      | British     |
+      | gender           | MALE        |
+      
+      
+package com.test.steps;
+
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import static org.hamcrest.Matchers.equalTo;
+
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import io.restassured.response.Response;
+import io.restassured.response.ValidatableResponse;
+import io.restassured.specification.RequestSpecification;
+
+public class SearchOptionsAPI {
+	
+	private Response response;
+	private ValidatableResponse json;
+	private RequestSpecification request;
+	private String alias = "AB01" ;
+    private String ENDPOINT_URL = "http://localhost:8080/api/v1/case/";
+
+	@Given("^A Case exists with alias of \"([^\"]*)\"$")
+	public void a_Case_exists_with_alias_of(String aliasName) throws Throwable {
+		request = request.given().param(alias, "alias:" + aliasName);
+	}
+
+	@When("^a user retrives the case details by alias$")
+	public void a_user_retrives_the_case_details_by_alias() throws Throwable {
+		response = request.when().get(ENDPOINT_URL);
+		System.out.println("response: " + response.prettyPrint());
+	}
+
+	@Then("^the status code is (\\d+)$")
+	public void the_status_code_is(int statusCode) throws Throwable {
+		json = response.then().statusCode(statusCode);
+	}
+
+	@Then("^the response includes following$")
+	public void the_response_includes_following(Map<String,String> responseFields) throws Throwable {
+		for (Map.Entry<String, String> field : responseFields.entrySet()) {
+			if(StringUtils.isNumeric(field.getValue())){
+				json.body(field.getKey(), equalTo(Integer.parseInt(field.getValue())));
+			}
+			else{
+				json.body(field.getKey(), equalTo(field.getValue()));
+			}
+		}
+	
+	}
+}
+
+
+package com.test.runner;
+
+import org.junit.runner.RunWith;
+
+import cucumber.api.CucumberOptions;
+import cucumber.api.junit.Cucumber;
+
+
+@RunWith(Cucumber.class)
+@CucumberOptions(
+				features= {"src/test/resources/features/"},
+				glue= {"com.test.steps"},
+				monochrome = true,
+				strict = false,
+				dryRun = false,
+				tags = "@API-Test")
+
+public class BDDSercvicesRunner {}
