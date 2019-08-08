@@ -17,61 +17,72 @@ java -Dwebdriver.chrome.driver="<path of the chrome driver>\chromedriver.exe" -j
 e.g: java -Dwebdriver.chrome.driver="C:\chromedriver.exe" -jar selenium-server-standalone-3.141.59.jar -role webdriver -hub http://10.1.249.52:4444/grid/register -port 4444
 
 
-java -Dwebdriver.gecko.driver="E:\geckodriver.exe" -jar selenium-server-standalone-3.141.59.jar -port 5557 -role node -hub http://localhost:4444/grid/register -browser "browserName=firefox, maxInstances=10, platform=ANY, seleniumProtocol=WebDriver"
+java -Dwebdriver.gecko.driver="E:\geckodriver.exe" -jar selenium-server-standalone-3.141.59.jar -port 5557 -role node -hub http://172.30.121.177:4444/grid/register -browser "browserName=firefox, maxInstances=10, platform=ANY, seleniumProtocol=WebDriver"
 
-java -Dwebdriver.chrome.driver="E:\chromedriver.exe" -jar selenium-server-standalone-3.141.59.jar -port 5558 -role node -hub http://localhost:4444/grid/register -browser "browserName=chrome, maxInstances=10, platform=ANY, seleniumProtocol=WebDriver"
 
-java -Dwebdriver.ie.driver="E:\IEDriverServer.exe" -jar selenium-server-standalone-3.141.59.jar -port 5559 -role node -hub http://localhost:4444/grid/register -browser "browserName=internet explorer, version=11, maxInstances=10, platform=WINDOWS, seleniumProtocol=WebDriver"
+java -Dwebdriver.chrome.driver="E:\chromedriver.exe" -jar selenium-server-standalone-3.141.59.jar -port 5558 -role node -hub http://172.30.121.177:4444/grid/register -browser "browserName=chrome, maxInstances=10, platform=ANY, seleniumProtocol=WebDriver"
+
+
+java -Dwebdriver.ie.driver="E:\IEDriverServer.exe" -jar selenium-server-standalone-3.141.59.jar -port 5559 -role node -hub http://172.30.121.177:4444/grid/register -browser "browserName=internet explorer, version=11, maxInstances=10, platform=WINDOWS, seleniumProtocol=WebDriver"
 
 #Code to run
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 public class SeleniumGrid {
 
 	WebDriver driver;
-	
+
 	String appURL = "https://opensource-demo.orangehrmlive.com/";
-	String nodeURLff = "http://localhost:5557/wd/hub";
-	String nodeURLch = "http://localhost:5558/wd/hub";
-	String nodeURLie = "http://localhost:5559/wd/hub";
-	
+	String nodeURLff = "http://172.30.121.177:5557/wd/hub";
+	String nodeURLch = "http://172.30.121.177:5558/wd/hub";
+	String nodeURLie = "http://172.30.121.177:5559/wd/hub";
+
 	public static void main(String[] args) throws MalformedURLException, InterruptedException {
 		SeleniumGrid seleniumGrid = new SeleniumGrid();
+
+		seleniumGrid.browserSetupFireFox();
+
+		seleniumGrid.browserSetupChrome();
+
 		seleniumGrid.browserSetupIE();
-		//seleniumGrid.browserSetupFireFox();
-		//seleniumGrid.browserSetupChrome();
-		
+
 	}
 
 	public void browserSetupFireFox() throws MalformedURLException, InterruptedException {
 		driver = new RemoteWebDriver(new URL(nodeURLff), DesiredCapabilities.firefox());
+		login(driver);
+
+	}
+
+	public void login(WebDriver driver) throws InterruptedException {
 		driver.get(appURL);
 		driver.manage().window().maximize();
 		Thread.sleep(5000);
+		driver.findElement(By.xpath("//*[@id='txtUsername']")).sendKeys("admin");
+		driver.findElement(By.xpath("//*[@id=\"txtPassword\"]")).sendKeys("admin123");
+		driver.findElement(By.xpath("//*[@id=\"btnLogin\"]")).click();
 		driver.quit();
 	}
-	
+
 	public void browserSetupChrome() throws MalformedURLException, InterruptedException {
 		driver = new RemoteWebDriver(new URL(nodeURLch), DesiredCapabilities.chrome());
-		driver.get(appURL);
-		driver.manage().window().maximize();
-		Thread.sleep(5000);
-		driver.quit();
+		login(driver);
 	}
-	
+
 	public void browserSetupIE() throws MalformedURLException, InterruptedException {
-		driver = new RemoteWebDriver(new URL(nodeURLie), DesiredCapabilities.internetExplorer());
-		driver.get(appURL);
-		driver.manage().window().maximize();
-		Thread.sleep(5000);
-		driver.quit();
+		DesiredCapabilities capabilities = DesiredCapabilities.internetExplorer();
+		capabilities.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
+		capabilities.setCapability("requireWindowFocus", true);
+		driver = new RemoteWebDriver(new URL(nodeURLie), capabilities);
+		login(driver);
 	}
 
 }
-
