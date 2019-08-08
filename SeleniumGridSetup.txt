@@ -16,30 +16,62 @@ java -Dwebdriver.chrome.driver="<path of the chrome driver>\chromedriver.exe" -j
 
 e.g: java -Dwebdriver.chrome.driver="C:\chromedriver.exe" -jar selenium-server-standalone-3.141.59.jar -role webdriver -hub http://10.1.249.52:4444/grid/register -port 4444
 
+
+java -Dwebdriver.gecko.driver="E:\geckodriver.exe" -jar selenium-server-standalone-3.141.59.jar -port 5557 -role node -hub http://localhost:4444/grid/register -browser "browserName=firefox, maxInstances=10, platform=ANY, seleniumProtocol=WebDriver"
+
+java -Dwebdriver.chrome.driver="E:\chromedriver.exe" -jar selenium-server-standalone-3.141.59.jar -port 5558 -role node -hub http://localhost:4444/grid/register -browser "browserName=chrome, maxInstances=10, platform=ANY, seleniumProtocol=WebDriver"
+
+java -Dwebdriver.ie.driver="E:\IEDriverServer.exe" -jar selenium-server-standalone-3.141.59.jar -port 5559 -role node -hub http://localhost:4444/grid/register -browser "browserName=internet explorer, version=11, maxInstances=10, platform=WINDOWS, seleniumProtocol=WebDriver"
+
 #Code to run
+
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 public class SeleniumGrid {
 
-	String appURL = "https://opensource-demo.orangehrmlive.com/";
-	String nodeURL = "http://10.1.249.52:5555/wd/hub";
 	WebDriver driver;
-
-	public static void main(String[] args) throws MalformedURLException {
-		new SeleniumGrid().browserSetup();
-
+	
+	String appURL = "https://opensource-demo.orangehrmlive.com/";
+	String nodeURLff = "http://localhost:5557/wd/hub";
+	String nodeURLch = "http://localhost:5558/wd/hub";
+	String nodeURLie = "http://localhost:5559/wd/hub";
+	
+	public static void main(String[] args) throws MalformedURLException, InterruptedException {
+		SeleniumGrid seleniumGrid = new SeleniumGrid();
+		seleniumGrid.browserSetupIE();
+		//seleniumGrid.browserSetupFireFox();
+		//seleniumGrid.browserSetupChrome();
+		
 	}
 
-	public void browserSetup() throws MalformedURLException {
-		DesiredCapabilities caps = new DesiredCapabilities();
-		caps.setBrowserName("chrome");
-		caps.setPlatform(Platform.XP);
-
-		driver = new RemoteWebDriver(new URL(nodeURL), caps);
+	public void browserSetupFireFox() throws MalformedURLException, InterruptedException {
+		driver = new RemoteWebDriver(new URL(nodeURLff), DesiredCapabilities.firefox());
 		driver.get(appURL);
 		driver.manage().window().maximize();
+		Thread.sleep(5000);
+		driver.quit();
+	}
+	
+	public void browserSetupChrome() throws MalformedURLException, InterruptedException {
+		driver = new RemoteWebDriver(new URL(nodeURLch), DesiredCapabilities.chrome());
+		driver.get(appURL);
+		driver.manage().window().maximize();
+		Thread.sleep(5000);
+		driver.quit();
+	}
+	
+	public void browserSetupIE() throws MalformedURLException, InterruptedException {
+		driver = new RemoteWebDriver(new URL(nodeURLie), DesiredCapabilities.internetExplorer());
+		driver.get(appURL);
+		driver.manage().window().maximize();
+		Thread.sleep(5000);
+		driver.quit();
 	}
 
 }
 
-
-https://developers.perfectomobile.com/pages/viewpage.action?pageId=21435360
