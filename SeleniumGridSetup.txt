@@ -1,0 +1,2 @@
+#Step1: Downlaod the Selenium Server jar file 
+#Step2:
