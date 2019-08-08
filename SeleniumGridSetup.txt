@@ -1,2 +1,4 @@
 #Step1: Downlaod the Selenium Server jar file 
-#Step2:
+#Step2: Place the Server jar file in 2 machines 
+#Step3: In machine 1: Open command Prompt > Navigate to the file location
+#Step4: In command prompt type: java -jar selenium-server-standalone-2.30.0.jar -role hub
